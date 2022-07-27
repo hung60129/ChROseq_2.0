@@ -1,6 +1,6 @@
 # ChROseq_2.0
 
-Instructions on running ChRO-seq jobs in [the Sethupathy Lab](https://github.com/Sethupathy-Lab). See [getting ready to run a job](https://github.com/Sethupathy-Lab/cornell_tutorials/blob/master/getting_ready_to_run_a_job.md) for general guidance of running josb at Cornell bioHPC enbironment. <br>
+Instructions on running ChRO-seq jobs in [the Sethupathy Lab](https://github.com/Sethupathy-Lab). See [getting ready to run a job](https://github.com/Sethupathy-Lab/cornell_tutorials/blob/master/getting_ready_to_run_a_job.md) for general guidance of running josb at Cornell bioHPC environment. <br>
 
 For more in-depth information about ChRO-seq method development, check out [Chu et al., Nature Genetics (2018)](https://www.nature.com/articles/s41588-018-0244-3) published by the Danko lab. A few more examples of how ChRO-seq can be applied to study human health and diseases: [Dinh et al., Cell Reports (2020)](https://www.sciencedirect.com/science/article/pii/S2211124720303995) for studying a rare liver cancer type, [Hung et al., NAR (2021)](https://academic.oup.com/nar/article/49/2/726/6066631) for studying human gut development, [Hung et al., bioRxiv](https://www.biorxiv.org/content/10.1101/2021.08.20.457162v2) for studying non-alcoholic steatohepatitis (NASH), and [Hung et al., bioRxiv](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) for a multi-omics integration study. 
 
