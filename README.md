@@ -115,8 +115,16 @@ After this step, we switch from a GPU to a standard 24-core compute node. <br>
 
 ## 4. Data visualization
 ### Bigwig file normalization
+>**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
+>**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
+>**Appropriate compute node**: 24-core node <br>
+
 ### Greate a genome track on UCSC genome browser
+Follow 
+To generate genome tracks for your project, 
+
 ### Other tools
+You can consider using tools such as `DeepTool` to visualize signal distribution. See an example from [my study]() - Supplementary figure 1. 
 
 
 ## 5. TRE type classification
@@ -124,7 +132,7 @@ After this step, we switch from a GPU to a standard 24-core compute node. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/classifyTRE_intragenicTRE_v2.0.py` <br>
 >**Appropriate compute node**: 24-core node <br>
 
-You will need a gtf file for gene coordinate information (below are the path of genomes in the Sethupathy lab): <br>.  
+You will need a gtf file for gene coordinate information (below are the path of genomes in the Sethupathy lab): <br>
 - mouse (mm9): `/home/pr46_0001/projects/genome/mm9/gencode.vM1.annotation.gtf` <br>
 - human (hg38): `/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf` <br>
 - rat (rn6): `/home/pr46_0001/projects/genome/rn6_rRNA/Rattus_norvegicus.Rnor_6.0.91.gtf` <br>
@@ -163,7 +171,7 @@ annotatePeaks.pl [PROJECT_NAME]_ALL.dREG.peak.score.bed hg38 > [PROJECT_NAME]_HO
 ```
 
 ## 6. Define differentially transcribed TREs between cell types/conditions
->**Goal**: Perform DESeq2-based differential expression analysis of TREs <br>
+>**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
 >**Appropriate compute node**: 24-core node <br>
 
@@ -172,18 +180,21 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 /programs/rstudio_server/rstudio_start 3.5.0
 ```
 
-You can modify the R template for your project needs. In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies, we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies, we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
+You can modify the R template for your project needs. In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies (intragenic TREs), we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies (non-intragenic TREs), we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
 
 
-## 7. Super-enhancer analysis
+## 7. Motif enrichment analysis
 
 
-## 8. Motif enrichment analysis
+## 8. Super-enhancer analysis
 
 
 ## 9. Define differentially transcribed genes between cell types/conditions
 
 
 ## 10. Other ChRO-seq related tools
+### Define de novo transcription units
+
+### Histome modificaiton calling
 
 
