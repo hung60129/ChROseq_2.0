@@ -200,7 +200,7 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 /programs/rstudio_server/rstudio_start 3.5.0
 ```
 
-Say here you want to compare TREs that are specific to stage A compared to control. You can use this template to generate `[PROJECT-NAME-stageA-specific-TRE].bed` and `[PROJECT-NAME-non-stageA-specific-TRE].bed` (background), both will be used for HOMER motif analysis.
+Say here you want to compare TREs that are specific to stage A compared to control. You can use this template to generate `[PROJECT-NAME-stageA-specific-TRE].bed` and `[PROJECT-NAME-non-stageA-specific-TRE].bed` (background), both will be used for HOMER motif analysis. <br>
 
 ### HOMER motif analysis
 Find more information about HOMER motif analysis [here](http://homer.ucsd.edu/homer/motif/). This tool has been installed in our lab space, all you need to do is to source the HOMER environment by the following command and you should be able to carry out any analyses provided by HOMER.  <br>
@@ -226,14 +226,19 @@ After the job is completed, find `homerResult.html` and `knownResults.html` in t
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
 >**Appropriate compute node**: 24-core node <br>
 
+### Prepare bed files
+See instructions in `7. Motif enrichment analysis`.
+
+### Run super-enhancer analysis
 This python script include the following major steps: <br>
 *Note*: There are several differences compared with v2.0. 
-1. Input **enhancer** TREs of interest. The script doesn't remove proximal TRE for you.
-2. Stitch together TREs within defined distance (default: 12500 base)
-3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
-4. Normalizing read counts for differences in sequencing depth
-5. Sum TRE read counts within each stitched enhancer
-6. Rank enhancers and identify super enhancers
+-1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you.
+-2. Stitch together TREs within defined distance (default: 12500 base)
+-3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
+-4. Normalizing read counts for differences in sequencing depth
+-5. Sum TRE read counts within each stitched enhancer
+-6. Rank enhancers and identify super enhancers
+
 
 
 ## 9. Define differentially transcribed genes between cell types/conditions
