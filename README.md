@@ -221,7 +221,13 @@ hg38 \
 
 After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. 
 
-## 8. Super-enhancer analysis
+### Extract TREs containing specific motifs 
+
+
+## 8. TRE density analysis
+
+
+## 9. Super-enhancer analysis
 >**Goal**: Define super-enhancers (or enhancer hotspots) with enhancer TREs of interest. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
 >**Appropriate compute node**: 24-core node <br>
@@ -232,19 +238,30 @@ See instructions in `7. Motif enrichment analysis`.
 ### Run super-enhancer analysis
 This python script include the following major steps: <br>
 *Note*: There are several differences compared with v2.0. 
--1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you.
--2. Stitch together TREs within defined distance (default: 12500 base)
--3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
--4. Normalizing read counts for differences in sequencing depth
--5. Sum TRE read counts within each stitched enhancer
--6. Rank enhancers and identify super enhancers
+1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you.
+2. Stitch together TREs within defined distance (default: 12500 base)
+3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
+4. Normalizing read counts for differences in sequencing depth
+5. Sum TRE read counts within each stitched enhancer
+6. Rank enhancers and identify super enhancers
+
+(1)	create txt containing paths of plus bw files of the samples within a treatment group 
+(2)	python3 identifySuperEnhancers.py -u 1000 -d 200 -p SE_hESC HOMER_hESC_TREs_new.dREG_padj0.05log2FC2.5.bed /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf /workdir/yah6/hESC.txt > file.txt
+(3)	transform the output file to correct bed format for python tool ‘findClosestGene’
+(4)	Optional: input a gene list
+(5)	python3 findClosestGene2TRE_v2.0.py -e ChRO_RNA_UP_genes_hESCvsDE.txt SE_hESC_stitched_enhancers_info.bed /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf > SE_hESC_findClosestGene2TRE_UPgenelist.txt
+![image](https://user-images.githubusercontent.com/33610675/181852590-f030ee09-7603-49ff-a2bd-2717cbe409b2.png)
+
+### Assign genes to super-enhancer
+#### Method 1 
+
+#### Method 2
 
 
+## 10. Define differentially transcribed genes between cell types/conditions
 
-## 9. Define differentially transcribed genes between cell types/conditions
 
-
-## 10. Other ChRO-seq related tools
+## 11. Other ChRO-seq related tools
 ### Define de novo transcription units
 
 ### Histome modificaiton calling
