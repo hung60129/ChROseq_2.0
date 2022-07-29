@@ -112,7 +112,6 @@ for i in *peak.score.bed.gz; do echo $i; cat $i | gunzip | wc -l; done
 
 After this step, we switch from a GPU to a standard 24-core compute node. <br>
 
-
 ## 4. Data visualization
 ### Bigwig file normalization
 >**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
@@ -181,9 +180,9 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 ```
 
 You can modify the R template for your project needs. The R script include the 3 major steps (see below). <br>
-- extract ChRO-seq counts from TRE regions using package `bigwig` <br>
-- exploratory data analysis including heirachical clustering analysis and data dimentionality reduction by PCA 
-- input count matrix for differential expression analysis using package `DESeq2` <br>
+1. Extract ChRO-seq counts from TRE regions using package `bigwig` <br>
+2. Exploratory data analysis including heirachical clustering analysis and data dimentionality reduction by PCA 
+3. Input count matrix for differential expression analysis using package `DESeq2` <br>
 
 In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies (intragenic TREs), we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies (non-intragenic TREs), we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
 
@@ -209,7 +208,7 @@ Find more information about HOMER motif analysis [here](http://homer.ucsd.edu/ho
 source /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/setHOMERenv.bsh
 ```
 
-We use function `findMotifsGenome.pl` from HOMER. Usage of the command is: `findMotifsGenome.pl <peak/BED file> <genome> <output directory> -size # [options]`. We execute this job (see the example command below) by providing TREs of interest and proper background regions. Regardless the background file is provided or not, HOMER will normalize the background to remove GC-bias and will also perform autonormalization. <br>
+We use function `findMotifsGenome.pl` from HOMER. Usage of the command is: `findMotifsGenome.pl <peak/BED file> <genome> <output directory> -size # [options]`. We execute this job (see the example command below) by providing TREs of interest and proper background regions. Regardless of whether the background file is provided or not, HOMER will normalize the background to remove GC-bias and will also perform autonormalization. <br>
 
 ```
 findMotifsGenome.pl [PROJECT-NAME-stageA-specific-TRE].bed \
@@ -223,11 +222,18 @@ hg38 \
 After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. 
 
 ## 8. Super-enhancer analysis
->**Goal**: 
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
+>**Goal**: Define super-enhancers (or enhancer hotspots) with enhancer TREs of interest. <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
 >**Appropriate compute node**: 24-core node <br>
 
-
+This python script include the following major steps: <br>
+*Note*: There are several differences compared with v2.0. 
+1. Input **enhancer** TREs of interest. The script doesn't remove proximal TRE for you.
+2. Stitch together TREs within defined distance (default: 12500 base)
+3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
+4. Normalizing read counts for differences in sequencing depth
+5. Sum TRE read counts within each stitched enhancer
+6. Rank enhancers and identify super enhancers
 
 
 ## 9. Define differentially transcribed genes between cell types/conditions
