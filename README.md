@@ -140,9 +140,9 @@ You will need a gtf file for gene coordinate information (below are the path of 
 Subject `dREG.peak.score.bed.gz` file to the in-house python tool. The example command defined window of 1000 base upstream and 200 base downstream of TSS as a promoter region.  <br>
 ```
 zcat [PROJECT_NAME]_ALL.dREG.peak.score.bed.gz | python3 classifyTRE_intragenicTRE_v2.0.py \
- -u 1000 \ # upstream window
- -d 200 \ # downstream window
- -o 1 \ # number of base to be considered 'overlapping'
+ -u 1000 \
+ -d 200 \
+ -o 1 \ 
  /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf \
  > [PROJECT_NAME]_classifyTRE_intragenicTRE_v2.0_output.txt 
 ```
