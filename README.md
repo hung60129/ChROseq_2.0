@@ -124,7 +124,7 @@ Follow
 To generate genome tracks for your project, 
 
 ### Other tools
-You can consider using tools such as `DeepTool` to visualize signal distribution. See an example from [my study]() - Supplementary figure 1. 
+You can consider using tools such as `DeepTool` to visualize signal distribution. See an example from [here]() - Supplementary figure 1. 
 
 
 ## 5. TRE type classification
@@ -180,13 +180,54 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 /programs/rstudio_server/rstudio_start 3.5.0
 ```
 
-You can modify the R template for your project needs. In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies (intragenic TREs), we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies (non-intragenic TREs), we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
+You can modify the R template for your project needs. The R script include the 3 major steps (see below). <br>
+- extract ChRO-seq counts from TRE regions using package `bigwig` <br>
+- exploratory data analysis including heirachical clustering analysis and data dimentionality reduction by PCA 
+- input count matrix for differential expression analysis using package `DESeq2` <br>
 
+In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies (intragenic TREs), we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies (non-intragenic TREs), we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
 
 ## 7. Motif enrichment analysis
+>**Goal**: Use tool [HOMER](http://homer.ucsd.edu/homer/index.html) to identify transcription factor binding motifs enriched in a given set of TRE regions. <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
+>**Appropriate compute node**: 24-core node <br>
 
+### Prepare bed files
+You can use the following R template to generate files of TREs of interest and proper background regions in bed format. <br>  
+`/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/HOMER_analysis_intragenicTRE_tutorial.R` <br>
+
+See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=266#c) for using Rstudio at Cornell BioHPC. Make sure to load R 3.5.0 for this job. <br>
+```
+/programs/rstudio_server/rstudio_start 3.5.0
+```
+
+Say here you want to compare TREs that are specific to stage A compared to control. You can use this template to generate `[PROJECT-NAME-stageA-specific-TRE].bed` and `[PROJECT-NAME-non-stageA-specific-TRE].bed` (background), both will be used for HOMER motif analysis.
+
+### HOMER motif analysis
+Find more information about HOMER motif analysis [here](http://homer.ucsd.edu/homer/motif/). This tool has been installed in our lab space, all you need to do is to source the HOMER environment by the following command and you should be able to carry out any analyses provided by HOMER.  <br>
+```
+source /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/setHOMERenv.bsh
+```
+
+We use function `findMotifsGenome.pl` from HOMER. Usage of the command is: `findMotifsGenome.pl <peak/BED file> <genome> <output directory> -size # [options]`. We execute this job (see the example command below) by providing TREs of interest and proper background regions. Regardless the background file is provided or not, HOMER will normalize the background to remove GC-bias and will also perform autonormalization. <br>
+
+```
+findMotifsGenome.pl [PROJECT-NAME-stageA-specific-TRE].bed \
+hg38 \
+[PROJECT-NAME-stageA-specific]_HOMER_output_folder \
+-size given \
+-bg [PROJECT-NAME-non-stageA-specific-TRE].bed \
+-p 22
+```
+
+After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. 
 
 ## 8. Super-enhancer analysis
+>**Goal**: 
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
+>**Appropriate compute node**: 24-core node <br>
+
+
 
 
 ## 9. Define differentially transcribed genes between cell types/conditions
