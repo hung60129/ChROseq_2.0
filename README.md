@@ -1,14 +1,14 @@
 # ChROseq_2.0
 
-Instructions on running ChRO-seq jobs in [the Sethupathy Lab](https://github.com/Sethupathy-Lab). See [getting ready to run a job](https://github.com/Sethupathy-Lab/cornell_tutorials/blob/master/getting_ready_to_run_a_job.md) for general guidance of running josb at Cornell bioHPC environment. <br>
+Instructions on running ChRO-seq jobs in [the Sethupathy Lab](https://github.com/Sethupathy-Lab). See [getting ready to run a job](https://github.com/Sethupathy-Lab/cornell_tutorials/blob/master/getting_ready_to_run_a_job.md) for general guidance of running josb at Cornell bioHPC environment. For more in-depth information about ChRO-seq method development, check out [Chu et al., Nature Genetics (2018)](https://www.nature.com/articles/s41588-018-0244-3) published by the Danko lab. 
 
-For more in-depth information about ChRO-seq method development, check out [Chu et al., Nature Genetics (2018)](https://www.nature.com/articles/s41588-018-0244-3) published by the Danko lab. A few more examples of how ChRO-seq can be applied to study human health and diseases: [Dinh et al., Cell Reports (2020)](https://www.sciencedirect.com/science/article/pii/S2211124720303995) for studying a rare liver cancer type, [Hung et al., NAR (2021)](https://academic.oup.com/nar/article/49/2/726/6066631) for studying human gut development, [Hung et al., bioRxiv](https://www.biorxiv.org/content/10.1101/2021.08.20.457162v2) for studying non-alcoholic steatohepatitis (NASH), and [Hung et al., bioRxiv](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) for a multi-omics integration study. 
+ChROseq analysis v1.0 was built by the previous member Dr. Tim Dihn. ChRO-seq v1.0 was described in [Dinh et al., Cell Reports (2020)](https://www.sciencedirect.com/science/article/pii/S2211124720303995) and [Hung et al., NAR (2021)](https://academic.oup.com/nar/article/49/2/726/6066631). I have made several changes to make this ChROseq_2.0 pipeline and applied for studies [Hung et al., bioRxiv (NASH project)](https://www.biorxiv.org/content/10.1101/2021.08.20.457162v2) and [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). 
 
 ## 1. Genome mapping
 >**Goal**: Eliminate PCR duplicates, trim reads, QC, map to a copy of the genome that contains the rRNA PolI repeating transcriptional unit. <br>
 >**Tool source**: Forked from https://github.com/Danko-Lab/proseq2.0/blob/master/proseq2.0.bsh with minor modifications. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper` <br>
->**Appropriate compute node**: 40 gpu
+>**Appropriate type of compute node**: 40 gpu
 
 Prepare mapping files (below are the path of genomes in the Sethupathy lab): <br>
    - mouse (mm9): `/home/pr46_0001/projects/genome/mm9_rRNA` <br>
@@ -57,7 +57,7 @@ python3 /workdir/your_cornell_ID/ProseqMapper/collect_ChROseq_mapping_statistics
 ## 2. Merging bigwig files
 >**Goal**: Merge bigwig files from mapping for the next step of TRE calling  <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh` <br>
->**Appropriate compute node**: 40 gpu <br>
+>**Appropriate type of compute node**: 40 gpu <br>
 
 Set path to `kentUtils` tool: <br>
 ```
@@ -79,7 +79,7 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWig
 ## 3. TRE calling
 >**Goal**: Define a universal set of transcriptional regulatory elements (TREs) using the latest [dREG tool](https://github.com/Danko-Lab/dREG/) from the Danko lab. Essentially, dREG is a machine learning algorithm that search for short bi-directional expression pattern of ChRO-seq signal across the entire genome. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/dREG/run_dREG_multiSample.bsh` <br>
->**Appropriate compute node**: 40 gpu (*essential to use gpu for this machine learning algorithm!*) <br>
+>**Appropriate type of compute node**: 40 gpu (*essential to use gpu for this machine learning algorithm!*) <br>
 
 Edit bash script for `outdir` and `gpu` parameters (if needed): <br>
 *Note*: do not change `asvm` parameter. That file is the original dataset used to train dREG. <br>
@@ -116,7 +116,7 @@ After this step, we switch from a GPU to a standard 24-core compute node. <br>
 ### Bigwig file normalization
 >**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
->**Appropriate compute node**: 24-core node <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
 ### Greate a genome track on UCSC genome browser
 Follow 
@@ -129,7 +129,7 @@ You can consider using tools such as `DeepTool` to visualize signal distribution
 ## 5. TRE type classification
 >**Goal**: Sort TREs into enhancer or promoter based on their genomic coordinates using a in-house tool. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/classifyTRE_intragenicTRE_v2.0.py` <br>
->**Appropriate compute node**: 24-core node <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
 You will need a gtf file for gene coordinate information (below are the path of genomes in the Sethupathy lab): <br>
 - mouse (mm9): `/home/pr46_0001/projects/genome/mm9/gencode.vM1.annotation.gtf` <br>
@@ -172,7 +172,7 @@ annotatePeaks.pl [PROJECT_NAME]_ALL.dREG.peak.score.bed hg38 > [PROJECT_NAME]_HO
 ## 6. Define differentially transcribed TREs between cell types/conditions
 >**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
->**Appropriate compute node**: 24-core node <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
 See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=266#c) for using Rstudio at Cornell BioHPC. Make sure to load R 3.5.0 for this job. <br>
 ```
@@ -189,7 +189,7 @@ In this latest version of script, we quantify TRE signal differently based on th
 ## 7. Motif enrichment analysis
 >**Goal**: Use tool [HOMER](http://homer.ucsd.edu/homer/index.html) to identify transcription factor binding motifs enriched in a given set of TRE regions. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
->**Appropriate compute node**: 24-core node <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
 ### Prepare bed files
 You can use the following R template to generate files of TREs of interest and proper background regions in bed format. <br>  
@@ -228,40 +228,68 @@ After the job is completed, find `homerResult.html` and `knownResults.html` in t
 
 
 ## 9. Super-enhancer analysis
->**Goal**: Define super-enhancers (or enhancer hotspots) with enhancer TREs of interest. <br>
+>**Goal**: Define super-enhancers (or enhancer hotspots) with enhancers of interest. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
->**Appropriate compute node**: 24-core node <br>
+>**Appropriate type of compute node**: 24-core node <br>
+
+### Prepare files
+1. Enhancers coordinates (bed format): see instructions in [HOMER section](#prepare-bed-files). 
+2. Bigwig paths (txt format): line-delimited file with path to bigwig file for each sample of interest (per condition). Must include absolute **full** path to each bigwig file. Include only path to **plus** strand bigwig. Minus strand bigwig must have same prefix. 
+
+### Run super-enhancer (SE) analysis
+This python script include the following major steps (*Note*: There are several differences compared with identifySuperEnhancers_v2.0.py): <br>
+1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you. <br>
+2. Stitch together TREs within defined distance (default: 12500 base) <br>
+3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs) <br>
+4. Normalizing read counts for differences in sequencing depth <br>
+5. Sum TRE read counts within each stitched enhancer <br>
+6. Rank enhancers and identify super enhancers <br>
+
+Execute the the job by the following command: <br>
+```
+python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py \
+-p [PROJECT-NAME-SE-stageA-prefix] \
+[PROJECT-NAME-stageA-specific-TRE].bed \
+/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf &> Proseq_output.log&
+```
+
+The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedPlot.png` and `[PROJECT-NAME-SE-stageA-prefix]_stitched_enhancers_info.txt`. 
+
+`[PROJECT-NAME-SE-stageA-prefix]_stitched_enhancers_info.txt` file contains the following columns: <br>
+1. Parent: the coordinates of stitched enhancers 
+2. Rank: the ranking based on the Total Signal of stitched enhancers
+3. TotalSignal: the sum of the ChRO-seq signal from each of the individual enhancers within a stitched enhancer
+4. Num TRE: the number of individual enhancers  stitched enhancer
+5. Length: length of the parent coodinates 
+6. Super: denotes whether the TotalSignal of a stitched enhancer is strong enough to be defined as a super-enhancer
+7. Children: the coordinates of each individual enhancer of a given stitched enhancer
+
+## 10. Assign genes to TREs/SEs
+Assigning genes to TREs/SEs can be distance-based [Method1](#method1) or correlation-based [Method2](#method2). 
 
 ### Prepare bed files
-See instructions in `7. Motif enrichment analysis`.
+Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [HOMER section](#prepare-bed-files).
 
-### Run super-enhancer analysis
-This python script include the following major steps: <br>
-*Note*: There are several differences compared with v2.0. 
-1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you.
-2. Stitch together TREs within defined distance (default: 12500 base)
-3. Get read counts within each TRE from bigwigs (count both strands for non-intragenic TREs; count the opposite strand and *2 for intragenic TREs)
-4. Normalizing read counts for differences in sequencing depth
-5. Sum TRE read counts within each stitched enhancer
-6. Rank enhancers and identify super enhancers
+### Method 1 
+>**Goal**: Identify genes of which the TSSs are closest to TREs/SEs of interest 
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v2.0.py`
+>**Appropriate type of compute node**: 24-core node 
 
-(1)	create txt containing paths of plus bw files of the samples within a treatment group 
-(2)	python3 identifySuperEnhancers.py -u 1000 -d 200 -p SE_hESC HOMER_hESC_TREs_new.dREG_padj0.05log2FC2.5.bed /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf /workdir/yah6/hESC.txt > file.txt
-(3)	transform the output file to correct bed format for python tool ‘findClosestGene’
-(4)	Optional: input a gene list
-(5)	python3 findClosestGene2TRE_v2.0.py -e ChRO_RNA_UP_genes_hESCvsDE.txt SE_hESC_stitched_enhancers_info.bed /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf > SE_hESC_findClosestGene2TRE_UPgenelist.txt
-![image](https://user-images.githubusercontent.com/33610675/181852590-f030ee09-7603-49ff-a2bd-2717cbe409b2.png)
+See an example command that assign genes to super-enhancers uniquely present in stage A. Be noted that in our lab practices, we like to flag `-e (--express)` to run against a custome gene list instead of all genes across the entire genome. The gene list should be a line-delimited file containing a gene name per line. Depending on the purpose of this analysis could be genes that are transcribed in stage A (filtering by certain ChRO-seq signal threshold), are significantly up-transcribed in stage A compared to stage B (filtering based on DESeq2 analysis). Flag `-e` not only saves computing time but also generates more biological meaningful results.  
+```
+python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v2.0.py \
+[PROJECT-NAME-stageA]_SE.bed \
+/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf \
+-e [UP-genes-stageA-vs-stageB].txt \
+> [PROJECT-NAME]_findClosestGene2TRE_stageA_SE_UPgene.txt
+```
 
-### Assign genes to super-enhancer
-#### Method 1 
+### Method 2
 
-#### Method 2
+## 11. Define differentially transcribed genes between cell types/conditions
 
 
-## 10. Define differentially transcribed genes between cell types/conditions
-
-
-## 11. Other ChRO-seq related tools
+## 12. Other ChRO-seq related tools
 ### Define de novo transcription units
 
 ### Histome modificaiton calling
