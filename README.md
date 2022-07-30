@@ -265,7 +265,7 @@ The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedP
 7. Children: the coordinates of each individual enhancer of a given stitched enhancer
 
 ## 10. Assign genes to TREs/SEs
-Assigning genes to TREs/SEs can be distance-based [Method1](#method1) or correlation-based [Method2](#method2). 
+Assigning genes to TREs/SEs can be distance-based ([Method1](#method-1)) or correlation-based ([Method2](#method-2)). 
 
 ### Prepare bed files
 Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [HOMER section](#prepare-bed-files).
@@ -275,7 +275,7 @@ Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [H
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v2.0.py`
 >**Appropriate type of compute node**: 24-core node 
 
-See an example command that assign genes to super-enhancers uniquely present in stage A. Be noted that in our lab practices, we like to flag `-e (--express)` to run against a custome gene list instead of all genes across the entire genome. The gene list should be a line-delimited file containing a gene name per line. Depending on the purpose of this analysis could be genes that are transcribed in stage A (filtering by certain ChRO-seq signal threshold), are significantly up-transcribed in stage A compared to stage B (filtering based on DESeq2 analysis). Flag `-e` not only saves computing time but also generates more biological meaningful results.  
+See an example command that assign genes to super-enhancers uniquely present in stage A. In the lab, we like to flag `-e (--express)` to run against a custome gene list instead of all genes across the entire genome. The gene list should be a line-delimited file containing a gene name per line. Depending on the purpose of this analysis could be genes that are transcribed in stage A (filtering by certain ChRO-seq signal threshold), are significantly up-transcribed in stage A compared to stage B (filtering based on DESeq2 analysis). Flag `-e` not only saves computing time but also generates more biological meaningful results.  
 ```
 python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v2.0.py \
 [PROJECT-NAME-stageA]_SE.bed \
