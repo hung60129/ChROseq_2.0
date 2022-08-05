@@ -250,7 +250,8 @@ Execute the the job by the following command: <br>
 python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py \
 -p [PROJECT-NAME-SE-stageA-prefix] \
 [PROJECT-NAME-stageA-specific-TRE].bed \
-/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf &> Proseq_output.log&
+/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf \
+[PROJECT-NAME-path-to-stageA-bigwig].txt &> SE_output.log&
 ```
 
 The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedPlot.png` and `[PROJECT-NAME-SE-stageA-prefix]_stitched_enhancers_info.txt`. 
