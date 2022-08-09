@@ -246,6 +246,10 @@ This python script include the following major steps (*Note*: There are several 
 6. Rank enhancers and identify super enhancers <br>
 
 Execute the the job by the following command: <br>
+Load R3.5.0 <br> 
+```
+module load R/3.5.0
+```
 ```
 python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py \
 -p [PROJECT-NAME-SE-stageA-prefix] \
