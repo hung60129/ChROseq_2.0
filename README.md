@@ -4,6 +4,7 @@ Instructions on running ChRO-seq jobs in [the Sethupathy Lab](https://github.com
 
 ChROseq analysis v1.0 was built by the previous member Dr. Tim Dihn. ChRO-seq v1.0 was described in [Dinh et al., Cell Reports (2020)](https://www.sciencedirect.com/science/article/pii/S2211124720303995) and [Hung et al., NAR (2021)](https://academic.oup.com/nar/article/49/2/726/6066631). I have made several changes to make this ChROseq_2.0 pipeline and applied it to studies [Hung et al., bioRxiv (NASH project)](https://www.biorxiv.org/content/10.1101/2021.08.20.457162v2) and [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). 
 
+
 ## 1. Genome mapping
 >**Goal**: Eliminate PCR duplicates, trim reads, QC, map to a copy of the genome that contains the rRNA PolI repeating transcriptional unit. <br>
 >**Tool source**: Forked from https://github.com/Danko-Lab/proseq2.0/blob/master/proseq2.0.bsh with minor modifications. <br>
@@ -54,7 +55,9 @@ python3 /workdir/your_cornell_ID/ProseqMapper/collect_ChROseq_mapping_statistics
 
 *Notes*: % Reads mapped should be ~5-35% (at least 20% preferred).
 
-## 2. Merging bigwig files
+
+## 2. TRE calling
+### Step 1: Merge bigwig files 
 >**Goal**: Merge bigwig files from mapping for the next step of TRE calling  <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh` <br>
 >**Appropriate type of compute node**: 40 gpu <br>
@@ -76,7 +79,7 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWig
   -c /home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes [PROJECT_NAME]_ALL_minus.bw *_minus.bw
 ```
 
-## 3. TRE calling
+### Step 2: TRE calling using dREG
 >**Goal**: Define a universal set of transcriptional regulatory elements (TREs) using the latest [dREG tool](https://github.com/Danko-Lab/dREG/) from the Danko lab. Essentially, dREG is a machine learning algorithm that search for short bi-directional expression pattern of ChRO-seq signal across the entire genome. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/dREG/run_dREG_multiSample.bsh` <br>
 >**Appropriate type of compute node**: 40 gpu (*essential to use gpu for this machine learning algorithm!*) <br>
@@ -112,21 +115,63 @@ for i in *peak.score.bed.gz; do echo $i; cat $i | gunzip | wc -l; done
 
 After this step, we switch from a GPU to a standard 24-core compute node. <br>
 
-## 4. Data visualization
-### Bigwig file normalization
->**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
->**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
+
+## 3. Data visualization
+### Step 1: Merge Bigwig files for visualization purpose
+>**Goal**: Merge plus & minus bigwig files from mapping step by experimental group for visualization on the UCSC genome browser as individual tracks. <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded_bigwigs4visualization.sh` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
-### Greate a genome track on UCSC genome browser
-Follow 
-To generate genome tracks for your project, 
+Noted that this bigwig merging job is different from the one in the TRE calling step. For TRE calling step, we merge bigwig files from ALL the samples WITHOUT normalization. For visualization purpose, we merge bigwig files for each of the experimental groups followed by a normalization process. Some notes from Tim: "Bigwig signal is determined by two things: (1) number of reads (2) read length. In some cases, read length is variable (smRNA-seq, ChRO-seq). In these situations, normalization is tricky because you can't normalize accurate using a per read metric (unless you get an average read length like RNA-seq or represent each read as a single value regardless of read length). Here we normalize using total bigwig signal, "wigsum". This script normalizes to a total wigsum of 100,000,000. <br>
 
-### Other tools
+First, source the shell script and tool path by the following commands: <br>
+```
+source /programs/RSeQC2-2.6.1/setup.sh
+export PATH=/programs/kentUtils/bin:$PATH
+```
+
+Next, edit the bash script related to chromosome path (the example below is for human samples): <br>
+```
+nano normalize_stranded_bigwigs4visualization.sh
+
+####################################
+###### Input  parameters here ######
+####################################
+
+chrom='/home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes'
+wigsum=100000000
+suffix='normalized_100Msignal'
+```
+Also further down in the script: <br>
+```
+pos_sum=`cat tmp_plus.bedGraph | sort -k1,1 -k2,2n | bedtools map -a /home/pr46_0001/projects/genome/GRCh38.p7/GRCh38.chrom.sizes.bed -b stdin -c 4 -o sum | awk '{sum+=$4} END {print sum}'`
+neg_sum=`cat tmp_minus.bedGraph | sort -k1,1 -k2,2n | bedtools map -a /home/pr46_0001/projects/genome/GRCh38.p7/GRCh38.chrom.sizes.bed -b stdin -c 4 -o sum | awk '{sum+=$4} END {print sum}'`
+```
+
+Finally, to carry out this merging+normalization step, you merge bigwigs files using `mergeBigWigs.bsh` followed by `normalize_stranded_bigwigs4visualization.sh`. Be noted that you tackle plus and minus bigwig files saparately and tackle experimental groups separately. <br>
+```
+bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh \
+  -c /home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes [PROJECT_NAME]_combined_StageA_plus.bw StageA_sample1_plus.bw StageA_sample2_plus.bw StageA_sample3_plus.bw
+```
+```
+bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh \
+  -c /home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes [PROJECT_NAME]_combined_StageA_minus.bw StageA_sample1_minus.bw StageA_sample2_minus.bw StageA_sample3_minus.bw
+```
+You input the path to [PROJECT_NAME]_combined_StageA_plus.bw when executing the normalization bash file. It will automatically do the normalization for the minus bigwig file if it has the same file prefix. <br>
+```
+bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded_bigwigs4visualization.sh \  
+[PROJECT_NAME]_combined_StageA_plus.bw
+```
+The complation of the job will generate files with suffix 'normalized_100Msignal'. You will upload the normalized bigwig files to UCSC genome browser. <br>
+
+### Step 2: Greate a genome track on UCSC genome browser
+ 
+
+### Other visuzalization tools 
 You can consider using tools such as `DeepTool` to visualize signal distribution. See an example from [here]() - Supplementary figure 1. 
 
 
-## 5. TRE type classification
+## 4. TRE type classification
 >**Goal**: Sort TREs into enhancer or promoter based on their genomic coordinates using a in-house tool. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/classifyTRE_intragenicTRE_v2.0.py` <br>
 >**Appropriate type of compute node**: 24-core node <br>
@@ -169,7 +214,8 @@ source /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/setHOMERenv.bsh
 annotatePeaks.pl [PROJECT_NAME]_ALL.dREG.peak.score.bed hg38 > [PROJECT_NAME]_HOMER_TRE_annotation_output.txt
 ```
 
-## 6. Define differentially transcribed TREs between cell types/conditions
+
+## 5. Define differentially transcribed TREs between cell types/conditions
 >**Goal**: Perform DESeq2-based differential expression analysis of TREs. <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_intragenicTRE_tutorial.R` <br>
 >**Appropriate type of compute node**: 24-core node <br>
@@ -186,12 +232,13 @@ You can modify the R template for your project needs. The R script include the 3
 
 In this latest version of script, we quantify TRE signal differently based on the `intragenic status` of TRE type output. **For those that are entirely within gene bodies (intragenic TREs), we extract counts only from the opposite (non-stranded) strand and multiply the singal by 2. For those that are not entirely within gene bodies (non-intragenic TREs), we extract and sum counts from both strands.** This change was made for eliminating bias from gene transcription activity. <br>
 
-## 7. Motif enrichment analysis
+
+## 6. Motif enrichment analysis
 >**Goal**: Use tool [HOMER](http://homer.ucsd.edu/homer/index.html) to identify transcription factor binding motifs enriched in a given set of TRE regions. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
 >**Appropriate type of compute node**: 24-core node <br>
 
-### Prepare bed files
+### Step 1: Prepare bed files
 You can use the following R template to generate files of TREs of interest and proper background regions in bed format. <br>  
 `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/HOMER_analysis_intragenicTRE_tutorial.R` <br>
 
@@ -202,7 +249,7 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 
 Say here you want to compare TREs that are specific to stage A compared to control. You can use this template to generate `[PROJECT-NAME-stageA-specific-TRE].bed` and `[PROJECT-NAME-non-stageA-specific-TRE].bed` (background), both will be used for HOMER motif analysis. <br>
 
-### HOMER motif analysis
+### Step 2: HOMER motif analysis
 Find more information about HOMER motif analysis [here](http://homer.ucsd.edu/homer/motif/). This tool has been installed in our lab space, all you need to do is to source the HOMER environment by the following command and you should be able to carry out any analyses provided by HOMER.  <br>
 ```
 source /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/setHOMERenv.bsh
@@ -221,13 +268,13 @@ hg38 \
 
 After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. 
 
-### Extract TREs containing specific motifs 
+### Step 3: Extract TREs containing specific motifs 
 
 
-## 8. TRE density analysis
+## 7. TRE density analysis
 
 
-## 9. Super-enhancer analysis
+## 8. Super-enhancer analysis
 >**Goal**: Define super-enhancers (or enhancer hotspots) with enhancers of interest. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
 >**Appropriate type of compute node**: 24-core node <br>
@@ -246,7 +293,6 @@ This python script include the following major steps (*Note*: There are several 
 6. Rank enhancers and identify super enhancers <br>
 
 Execute the the job by the following command: <br>
-Load R3.5.0 <br> 
 ```
 module load R/3.5.0
 ```
@@ -269,7 +315,8 @@ The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedP
 6. Super: denotes whether the TotalSignal of a stitched enhancer is strong enough to be defined as a super-enhancer
 7. Children: the coordinates of each individual enhancer of a given stitched enhancer
 
-## 10. Assign genes to TREs/SEs
+
+## 9. Assign genes to TREs/SEs
 Assigning genes to TREs/SEs can be distance-based ([Method1](#method-1)) or correlation-based ([Method2](#method-2)). 
 
 ### Prepare bed files
@@ -291,10 +338,11 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 
 ### Method 2
 
-## 11. Define differentially transcribed genes between cell types/conditions
+
+## 10. Define differentially transcribed genes between cell types/conditions
 
 
-## 12. Other ChRO-seq related tools
+## 11. Other ChRO-seq related tools
 ### Define de novo transcription units
 
 ### Histome modificaiton calling
