@@ -123,6 +123,7 @@ After this step, we switch from a GPU to a standard 24-core compute node. <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 Noted that this bigwig merging job is different from the one in the TRE calling step. For TRE calling step, we merge bigwig files from ALL the samples WITHOUT normalization. For visualization purpose, we merge bigwig files for each of the experimental groups followed by a normalization process. <br>
+
 Some notes from Tim: "Bigwig signal is determined by two things: (1) number of reads (2) read length. In some cases, read length is variable (smRNA-seq, ChRO-seq). In these situations, normalization is tricky because you can't normalize accurate using a per read metric (unless you get an average read length like RNA-seq or represent each read as a single value regardless of read length). Here we normalize using total bigwig signal, "wigsum". This script normalizes to a total wigsum of 100,000,000." <br>
 
 First, source the shell script and tool path by the following commands: <br>
