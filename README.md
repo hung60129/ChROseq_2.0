@@ -254,7 +254,7 @@ In this latest version of script, we quantify TRE signal differently based on th
 
 ## 6. Motif enrichment analysis
 >**Goal**: Use tool [HOMER](http://homer.ucsd.edu/homer/index.html) to identify transcription factor binding motifs enriched in a given set of TRE regions. <br>
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 ### 6-1: Prepare bed files
@@ -313,7 +313,7 @@ You may need to do the following before execute FIMO job: <br>
 
 ## 7. TRE density analysis
 >**Goal**: Count TREs Within X bp of each TSS/gene using GTF file as the genome reference. <br>
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/countTREsWithinXbp_v2.1.py`
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/countTREsWithinXbp_v2.1.py` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 We typically examine the TRE:TSS relationship by using search window within 100 kb upstream and downstream of TSS. 
@@ -328,12 +328,12 @@ python3 countTREsWithinXbp_v2.1.py [PROJECT_NAME]_stageA_enhancer_coordinates.be
 
 ## 8. Super-enhancer analysis
 >**Goal**: Define super-enhancers (or enhancer hotspots) with enhancers of interest. <br>
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 ### 8-1: Prepare files
-1. Enhancers coordinates (bed format): see instructions in [HOMER section](#prepare-bed-files). 
-2. Bigwig paths (txt format): line-delimited file with path to bigwig file for each sample of interest (per condition). Must include absolute **full** path to each bigwig file. Include only path to **plus** strand bigwig. Minus strand bigwig must have same prefix. 
+1. Enhancers coordinates (bed format): see instructions in [HOMER section](#prepare-bed-files). <br>
+2. Bigwig paths (txt format): line-delimited file with path to bigwig file for each sample of interest (per condition). Must include absolute **full** path to each bigwig file. Include only path to **plus** strand bigwig. Minus strand bigwig must have same prefix. <br>
 
 ### 8-2: Run super-enhancer (SE) analysis
 This python script include the following major steps (*Note*: There are several differences compared with identifySuperEnhancers_v2.0.py): <br>
@@ -375,9 +375,9 @@ Assigning genes to TREs/SEs can be distance-based ([Method1](#method-1)) or corr
 Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [HOMER section](#prepare-bed-files).
 
 ### 9-2: Method 1 
->**Goal**: Identify genes of which the TSSs are closest to TREs/SEs of interest 
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/findClosestGene2TRE_v2.0.py`
->**Appropriate type of compute node**: 24-core node 
+>**Goal**: Identify genes of which the TSSs are closest to TREs/SEs of interest <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/findClosestGene2TRE_v2.0.py` <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
 See an example command that assign genes to super-enhancers uniquely present in stage A. In the lab, we like to flag `-e (--express)` to run against a custome gene list instead of all genes across the entire genome. The gene list should be a line-delimited file containing a gene name per line. Depending on the purpose of this analysis could be genes that are transcribed in stage A (filtering by certain ChRO-seq signal threshold), are significantly up-transcribed in stage A compared to stage B (filtering based on DESeq2 analysis). Flag `-e` not only saves computing time but also generates more biological meaningful results.  
 ```
