@@ -57,7 +57,7 @@ python3 /workdir/your_cornell_ID/ProseqMapper/collect_ChROseq_mapping_statistics
 
 
 ## 2. TRE calling
-### Step 1: Merge bigwig files 
+### 2-1: Merge bigwig files 
 >**Goal**: Merge bigwig files from mapping for the next step of TRE calling  <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh` <br>
 >**Appropriate type of compute node**: 40 gpu <br>
@@ -79,7 +79,7 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWig
   -c /home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes [PROJECT_NAME]_ALL_minus.bw *_minus.bw
 ```
 
-### Step 2: TRE calling using dREG
+### 2-2: TRE calling using dREG
 >**Goal**: Define a universal set of transcriptional regulatory elements (TREs) using the latest [dREG tool](https://github.com/Danko-Lab/dREG/) from the Danko lab. Essentially, dREG is a machine learning algorithm that search for short bi-directional expression pattern of ChRO-seq signal across the entire genome. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/dREG/run_dREG_multiSample.bsh` <br>
 >**Appropriate type of compute node**: 40 gpu (*essential to use gpu for this machine learning algorithm!*) <br>
@@ -117,7 +117,7 @@ After this step, we switch from a GPU to a standard 24-core compute node. <br>
 
 
 ## 3. Data visualization
-### Step 1: Merge Bigwig files for visualization purpose
+### 3-1: Merge Bigwig files for visualization purpose
 >**Goal**: Merge plus & minus bigwig files from mapping step by experimental group for visualization on the UCSC genome browser as individual tracks. <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded_bigwigs4visualization.sh` <br>
 >**Appropriate type of compute node**: 24-core node <br>
@@ -164,7 +164,7 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded
 ```
 The complation of the job will generate files with suffix 'normalized_100Msignal'. You will upload the normalized bigwig files to UCSC genome browser. <br>
 
-### Step 2: Greate a genome track on UCSC genome browser
+### 3-2: Greate a genome track on UCSC genome browser
 You can create tracks to visuzlize TREs and ChRO-seq intensity track on the plus/minus strand to [UCSC genome browser](https://genome.ucsc.edu/). We use ftp to upload files. Find more instructions on UCSC genome browser for file uplad and track formatting. Below are the general guideline you can follow:   
 
 > Log into UCSC account and upload files as “Custom Tracks” <br>
@@ -186,7 +186,7 @@ I like to add the following line at the very beginning of bed files of TRE coord
 track name=dREG_peak_score_ALL_TREs description="dREG peak score (ALL TREs)" itemRgb=On
 ```
 
-### Other visuzalization tools 
+### 3-3: Other visuzalization tools 
 You can consider using tools such as [DeepTool](https://deeptools.readthedocs.io/en/develop/) to visualize signal distribution. See an example from [here](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) - Supplementary figure 1. <br>
 
 
@@ -257,7 +257,7 @@ In this latest version of script, we quantify TRE signal differently based on th
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/`
 >**Appropriate type of compute node**: 24-core node <br>
 
-### Step 1: Prepare bed files
+### 6-1: Prepare bed files
 You can use the following R template to generate files of TREs of interest and proper background regions in bed format. <br>  
 `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/HOMER_analysis_intragenicTRE_tutorial.R` <br>
 
@@ -268,7 +268,7 @@ See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a
 
 Say here you want to compare TREs that are specific to stage A compared to control. You can use this template to generate `[PROJECT-NAME-stageA-specific-TRE].bed` and `[PROJECT-NAME-non-stageA-specific-TRE].bed` (background), both will be used for HOMER motif analysis. <br>
 
-### Step 2: HOMER motif analysis
+### 6-2: HOMER motif analysis
 Find more information about HOMER motif analysis [here](http://homer.ucsd.edu/homer/motif/). This tool has been installed in our lab space, all you need to do is to source the HOMER environment by the following command and you should be able to carry out any analyses provided by HOMER.  <br>
 ```
 source /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/HOMER/setHOMERenv.bsh
@@ -291,8 +291,7 @@ After the job is completed, find `homerResult.html` and `knownResults.html` in t
 - **% of Target Sequences with Motif**: % of motifs in stage of interest vs. custom background <br>
 You can perform further filtering of HOMER results by p-value, q-value, fold enrichment, etc. to narrow motif list. <br>
 
-
-### Step 3: Extract TREs containing specific motifs 
+### 6-3: Extract TREs containing specific motifs 
 You can also extract TREs containing motif of "transcription factor X" using HOMER. Generage usage of the HOMER command is `annotatePeaks.pl <peak/BED file> <genome> -size # -m <motif>`. You will need to upload motif of interest from the output folder of HOMER motif enrichment analysis. <br> 
 
 Below is the example for extracting stage A speicifc enhancers that contain motif of CDX2 in human samples. <br>
@@ -304,7 +303,7 @@ This HOMER command generates a really detailed output file. We can use the pytho
 python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/extract_motif_coordinates_HOMER.py HOMER_stageA_CDX2_enhancer.txt > stageA_enhancer_containing_CDX2_motif.bed
 ```
 
-### Additional comments
+### 6-4: dditional comments
 In some cases were you have a specific hypothesis for a given TRE region (e.g. are there any motif sequences of transscript factor X present in a given TRE?), you can consider using function `FIMO` (Find Individual Motif Occurences) from [meme suite](https://meme-suite.org/meme/index.html). While `meme suite` has not been implemented in our lab's linex environment, you can easily carry out job using their website portal. <br>
 
 You may need to do the following before execute FIMO job: <br>
@@ -332,11 +331,11 @@ python3 countTREsWithinXbp_v2.1.py [PROJECT_NAME]_stageA_enhancer_coordinates.be
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools_intragenicTRE/identifySuperEnhancers_intragenicTRE_v3.0.py`
 >**Appropriate type of compute node**: 24-core node <br>
 
-### Prepare files
+### 8-1: Prepare files
 1. Enhancers coordinates (bed format): see instructions in [HOMER section](#prepare-bed-files). 
 2. Bigwig paths (txt format): line-delimited file with path to bigwig file for each sample of interest (per condition). Must include absolute **full** path to each bigwig file. Include only path to **plus** strand bigwig. Minus strand bigwig must have same prefix. 
 
-### Run super-enhancer (SE) analysis
+### 8-2: Run super-enhancer (SE) analysis
 This python script include the following major steps (*Note*: There are several differences compared with identifySuperEnhancers_v2.0.py): <br>
 1. Input **enhancer** TREs of interest. The script doesn't take all TRE and remove promoter TREs for you. <br>
 2. Stitch together TREs within defined distance (default: 12500 base) <br>
@@ -372,10 +371,10 @@ The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedP
 ## 9. Assign genes to TREs/SEs
 Assigning genes to TREs/SEs can be distance-based ([Method1](#method-1)) or correlation-based ([Method2](#method-2)). 
 
-### Prepare bed files
+### 9-1: prepare bed files
 Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [HOMER section](#prepare-bed-files).
 
-### Method 1 
+### 9-2: Method 1 
 >**Goal**: Identify genes of which the TSSs are closest to TREs/SEs of interest 
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/findClosestGene2TRE_v2.0.py`
 >**Appropriate type of compute node**: 24-core node 
@@ -389,7 +388,7 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 > [PROJECT-NAME]_findClosestGene2TRE_stageA_SE_UPgene.txt
 ```
 
-### Method 2
+### 9-3: Method 2
 >**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/GeneTRECorrelations2bedpe.py` <br>
 >**Appropriate type of compute node**: 24-core node <br>
@@ -401,10 +400,10 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
-### Step 1: Re-define gene body coordinates
+### 10-1: Re-define gene body coordinates
 RNA polymerase pausing around promoter regions has been observed (see ). 
 
-### Step 2: Define DT genes between cell types/conditions
+### 10-2: Define DT genes between cell types/conditions
 The R script template of this job can be found at: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R`. <br>
 
 See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=266#c) for using Rstudio at Cornell BioHPC. Make sure to load R 3.5.0 for this job. <br>
@@ -417,7 +416,7 @@ You can modify the R template for your project needs. The R script include the 3
 2. Exploratory data analysis including heirachical clustering analysis and data dimentionality reduction by PCA 
 3. Input count matrix for differential expression analysis using package `DESeq2` <br>
 
-### Additional comments
+### 10-3: Additional comments
 
 
 
