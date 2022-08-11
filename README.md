@@ -395,7 +395,7 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 >**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/GeneTRECorrelations2bedpe.py` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
-*Noted* this correlation-based method need a large size sample to achieve statistical significance. <br>
+! Noted this correlation-based method need a large sample size to achieve statistical significance ! <br>
 
 ## 10. Define differentially transcribed (DT) genes between cell types/conditions
 >**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
