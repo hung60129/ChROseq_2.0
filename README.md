@@ -169,21 +169,21 @@ The complation of the job will generate files with suffix 'normalized_100Msignal
 ### 3-2: Greate a genome track on UCSC genome browser
 You can create tracks to visuzlize TREs and ChRO-seq intensity track on the plus/minus strand to [UCSC genome browser](https://genome.ucsc.edu/). We use ftp to upload files. Find more instructions on UCSC genome browser for file uplad and track formatting. Below are the general guideline you can follow:   
 
-> Log into UCSC account and upload files as “Custom Tracks” <br>
-> Choose appropriate genome assembly: Human (hg38) → “Add Custom Track” <br>
-> Add and submit URLs to files individually (My Data → Custom Tracks). Below are some examples: <br>
-> ```
-> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_all.dREG.peak.score.bed
-> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_plus_normalized_100Msignal.bw 
-> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_minus_normalized_100Msignal.bw
-> ```
-> View in genome browser → “Go” <br>
-> Check some genes of interest to make sure files are correct <br>
-> Save Settings to allow session to be loaded and shared with others. “My Session” → “Save Settings” <br>
-> Can configure settings to edit layout – any updates need to be saved <br>
-> Can share URL to collaborators! <br>
+1. Log into UCSC account and upload files as “Custom Tracks” <br>
+2. Choose appropriate genome assembly: Human (hg38) → “Add Custom Track” <br>
+3. Add and submit URLs to files individually (My Data → Custom Tracks). Below are some examples: <br>
+```
+ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_all.dREG.peak.score.bed
+ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_plus_normalized_100Msignal.bw 
+ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_minus_normalized_100Msignal.bw
+```
+4. View in genome browser → “Go” <br>
+5. Check some genes of interest to make sure files are correct <br>
+6. Save Settings to allow session to be loaded and shared with others. “My Session” → “Save Settings” <br>
+7. You can configure settings to edit layout – any updates need to be saved <br>
+8. You can share URL to collaborators! <br>
 
-I like to add the following line at the very beginning of bed files of TRE coordinates before uploaded onto UCSC Genome Browser. Change track name and description if you like. <br>
+I like to add the following line at the very beginning of bed files of TRE coordinates before uploaded onto UCSC Genome Browser: add custom track name and description if you like. <br>
 ```
 track name=dREG_peak_score_ALL_TREs description="dREG peak score (ALL TREs)" itemRgb=On
 ```
