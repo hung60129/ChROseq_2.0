@@ -390,13 +390,35 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 ```
 
 ### Method 2
->**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation 
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/TRE2Gene_v2.2.py`
->**Appropriate type of compute node**: 24-core node 
+>**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/GeneTRECorrelations2bedpe.py` <br>
+>**Appropriate type of compute node**: 24-core node <br>
 
-*Noted* this correlation-based method need a large size sample to achieve statistical significance. 
+*Noted* this correlation-based method need a large size sample to achieve statistical significance. <br>
 
-## 10. Define differentially transcribed genes between cell types/conditions
+## 10. Define differentially transcribed (DT) genes between cell types/conditions
+>**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
+>**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R` <br>
+>**Appropriate type of compute node**: 24-core node <br>
+
+### Step 1: Re-define gene body coordinates
+RNA polymerase pausing around promoter regions has been observed (see ). 
+
+### Step 2: Define DT genes between cell types/conditions
+The R script template of this job can be found at: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R`. <br>
+
+See detailed instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=266#c) for using Rstudio at Cornell BioHPC. Make sure to load R 3.5.0 for this job. <br>
+```
+/programs/rstudio_server/rstudio_start 3.5.0
+```
+
+You can modify the R template for your project needs. The R script include the 3 major steps (see below). <br>
+1. Extract ChRO-seq counts from gene bodies using package `bigwig` <br>
+2. Exploratory data analysis including heirachical clustering analysis and data dimentionality reduction by PCA 
+3. Input count matrix for differential expression analysis using package `DESeq2` <br>
+
+### Additional comments
+
 
 
 ## 11. Other ChRO-seq related tools
