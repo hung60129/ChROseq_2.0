@@ -15,7 +15,7 @@ Prepare mapping files (below are the path of genomes in the Sethupathy lab): <br
    - mouse (mm9): `/home/pr46_0001/projects/genome/mm9_rRNA` <br>
    - human (hg38): `/home/pr46_0001/projects/genome/GRCh38.p7_rRNA` <br>
    - rat (rn6): `/home/pr46_0001/projects/genome/rn6_rRNA` <br>
-   - If working with other species, use [bwa command](http://bio-bwa.sourceforge.net/bwa.shtml) to generate mapping files, add rRNA sequence to `.fa` file, and modify chromosom size file accordingly. <br>
+If working with other species, use [bwa command](http://bio-bwa.sourceforge.net/bwa.shtml) to generate mapping files, add rRNA sequence to `.fa` file, and modify chromosom size file accordingly. Also, currently we only has mm9 genome build for mouse samples. You can consider use `liftOver` to convert mm9 output to mm10 if nedded. <br>
 
 Once on a compute node, source the environment to run ChRO-seq mapping: <br>
 ```
@@ -160,34 +160,34 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWig
 You input the path to `[PROJECT_NAME]_combined_StageA_plus.bw` when executing the normalization bash file. It will automatically do the normalization for the minus bigwig file if it has the same file prefix. <br>
 ```
 bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded_bigwigs4visualization.sh \  
-[PROJECT_NAME]_combined_StageA_plus.bw
+[PROJECT_NAME]_combined_StageA_plus.bw &> bigwig_visualization_output.log&
 ```
 The complation of the job will generate files with suffix 'normalized_100Msignal'. You will upload the normalized bigwig files to UCSC genome browser. <br>
 
 ### Step 2: Greate a genome track on UCSC genome browser
 You can create tracks to visuzlize TREs and ChRO-seq intensity track on the plus/minus strand to [UCSC genome browser](https://genome.ucsc.edu/). We use ftp to upload files. Find more instructions on UCSC genome browser for file uplad and track formatting. Below are the general guideline you can follow:   
 
-> Log into UCSC account and upload files as “Custom Tracks”
-> Choose appropriate genome assembly: Human (hg38) → “Add Custom Track”
-> Add and submit URLs to files individually (My Data → Custom Tracks). Below are some examples:
+> Log into UCSC account and upload files as “Custom Tracks” <br>
+> Choose appropriate genome assembly: Human (hg38) → “Add Custom Track” <br>
+> Add and submit URLs to files individually (My Data → Custom Tracks). Below are some examples: <br>
 > ```
 > ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_all.dREG.peak.score.bed
 > ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_plus_normalized_100Msignal.bw 
 > ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_minus_normalized_100Msignal.bw
 > ```
-> View in genome browser → “Go” 
-> Check some genes of interest to make sure files are correct  
-> Save Settings to allow session to be loaded and shared with others. “My Session” → “Save Settings” 
-> Can configure settings to edit layout – any updates need to be saved
-> Can share URL to collaborators!  
+> View in genome browser → “Go” <br>
+> Check some genes of interest to make sure files are correct <br>
+> Save Settings to allow session to be loaded and shared with others. “My Session” → “Save Settings” <br>
+> Can configure settings to edit layout – any updates need to be saved <br>
+> Can share URL to collaborators! <br>
 
-I like to add the following line at the very beginning of bed files of TRE coordinates before uploaded onto UCSC Genome Browser. Change track name and description if you like. 
+I like to add the following line at the very beginning of bed files of TRE coordinates before uploaded onto UCSC Genome Browser. Change track name and description if you like. <br>
 ```
 track name=dREG_peak_score_ALL_TREs description="dREG peak score (ALL TREs)" itemRgb=On
 ```
 
 ### Other visuzalization tools 
-You can consider using tools such as [DeepTool](https://deeptools.readthedocs.io/en/develop/) to visualize signal distribution. See an example from [here](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) - Supplementary figure 1. 
+You can consider using tools such as [DeepTool](https://deeptools.readthedocs.io/en/develop/) to visualize signal distribution. See an example from [here](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) - Supplementary figure 1. <br>
 
 
 ## 4. TRE type classification
@@ -285,12 +285,46 @@ hg38 \
 -p 22
 ```
 
-After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. 
+After the job is completed, find `homerResult.html` and `knownResults.html` in the output folder for result summary. You can find more informtion about how to inteprete the results on HOMER website, here are some key highlights: <br>
+- **Known Motif Enrichment Results**: uses existing motif database (prior knowledge) to determine motif enrichment <br>
+- **De Novo Motif Enrichment Results**: unbiased approach, does not take prior knowledge and finds repeating sequence segments in the data that are later compared with the known motif sequences <br>
+- **% of Target Sequences with Motif**: % of motifs in stage of interest vs. custom background <br>
+You can perform further filtering of HOMER results by p-value, q-value, fold enrichment, etc. to narrow motif list. <br>
+
 
 ### Step 3: Extract TREs containing specific motifs 
+You can also extract TREs containing motif of "transcription factor X" using HOMER. Generage usage of the HOMER command is `annotatePeaks.pl <peak/BED file> <genome> -size # -m <motif>`. You will need to upload motif of interest from the output folder of HOMER motif enrichment analysis. <br> 
+
+Below is the example for extracting stage A speicifc enhancers that contain motif of CDX2 in human samples. <br>
+```
+annotatePeaks.pl [PROJECT_NAME]_stageA_enhancer_coordinates.bed hg38 -size given -m CDX2.motif > HOMER_stageA_CDX2_enhancer.txt
+```
+This HOMER command generates a really detailed output file. We can use the python script to extract region coordinates for other downstream analyses. <br> 
+```
+python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/extract_motif_coordinates_HOMER.py HOMER_stageA_CDX2_enhancer.txt > stageA_enhancer_containing_CDX2_motif.bed
+```
+
+### Additional comments
+In some cases were you have a specific hypothesis for a given TRE region (e.g. are there any motif sequences of transscript factor X present in a given TRE?), you can consider using function `FIMO` (Find Individual Motif Occurences) from [meme suite](https://meme-suite.org/meme/index.html). While `meme suite` has not been implemented in our lab's linex environment, you can easily carry out job using their website portal. <br>
+
+You may need to do the following before execute FIMO job: <br>
+- get DNA sequence of region of interest using this [tool](https://www.genome.ucsc.edu/cgi-bin/hgc?hgsid=1377211335_1JSdKvOBhA7HkslWuQydSAUvcXEN&g=getDna&i=NM_001328514.1&c=chr13&l=63278695&r=63795367&o=ncbiRefSeqCurated&table=ncbiRefSeqCurated) from UCSC Genome Browser. <br>
+- download compatitle motif database for FIMO. In my case working with human samples, I downloaded `HOCOMOCOv11_full_HUMAN_mono_meme_format.meme` for motif scanning. <br>
 
 
 ## 7. TRE density analysis
+>**Goal**: Count TREs Within X bp of each TSS/gene using GTF file as the genome reference. <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/countTREsWithinXbp_v2.1.py`
+>**Appropriate type of compute node**: 24-core node <br>
+
+We typically examine the TRE:TSS relationship by using search window within 100 kb upstream and downstream of TSS. 
+An example command is:
+```
+python3 countTREsWithinXbp_v2.1.py [PROJECT_NAME]_stageA_enhancer_coordinates.bed \
+/home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf \
+100000 \
+> [PROJECT_NAME]_stageA_enhancer_countTREsWithin100kb.txt
+```
 
 
 ## 8. Super-enhancer analysis
@@ -343,7 +377,7 @@ Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [H
 
 ### Method 1 
 >**Goal**: Identify genes of which the TSSs are closest to TREs/SEs of interest 
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v2.0.py`
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/findClosestGene2TRE_v2.0.py`
 >**Appropriate type of compute node**: 24-core node 
 
 See an example command that assign genes to super-enhancers uniquely present in stage A. In the lab, we like to flag `-e (--express)` to run against a custome gene list instead of all genes across the entire genome. The gene list should be a line-delimited file containing a gene name per line. Depending on the purpose of this analysis could be genes that are transcribed in stage A (filtering by certain ChRO-seq signal threshold), are significantly up-transcribed in stage A compared to stage B (filtering based on DESeq2 analysis). Flag `-e` not only saves computing time but also generates more biological meaningful results.  
@@ -356,14 +390,18 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 ```
 
 ### Method 2
+>**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation 
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/TRE2Gene_v2.2.py`
+>**Appropriate type of compute node**: 24-core node 
 
+*Noted* this correlation-based method need a large size sample to achieve statistical significance. 
 
 ## 10. Define differentially transcribed genes between cell types/conditions
 
 
 ## 11. Other ChRO-seq related tools
-### Define de novo transcription units
 
-### Histome modificaiton calling
+### Tunits
 
+Classify predicted transcription units: Haven't polished python script for publication purpose or 
 
