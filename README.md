@@ -157,7 +157,7 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWig
 bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ProseqMapper/mergeBigWigs.bsh \
   -c /home/pr46_0001/projects/genome/GRCh38.p7_rRNA/GRCh38.rRNA.chrom.sizes [PROJECT_NAME]_combined_StageA_minus.bw StageA_sample1_minus.bw StageA_sample2_minus.bw StageA_sample3_minus.bw
 ```
-You input the path to [PROJECT_NAME]_combined_StageA_plus.bw when executing the normalization bash file. It will automatically do the normalization for the minus bigwig file if it has the same file prefix. <br>
+You input the path to `[PROJECT_NAME]_combined_StageA_plus.bw` when executing the normalization bash file. It will automatically do the normalization for the minus bigwig file if it has the same file prefix. <br>
 ```
 bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded_bigwigs4visualization.sh \  
 [PROJECT_NAME]_combined_StageA_plus.bw
@@ -165,10 +165,29 @@ bash /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/normalize_stranded
 The complation of the job will generate files with suffix 'normalized_100Msignal'. You will upload the normalized bigwig files to UCSC genome browser. <br>
 
 ### Step 2: Greate a genome track on UCSC genome browser
- 
+You can create tracks to visuzlize TREs and ChRO-seq intensity track on the plus/minus strand to [UCSC genome browser](https://genome.ucsc.edu/). We use ftp to upload files. Find more instructions on UCSC genome browser for file uplad and track formatting. Below are the general guideline you can follow:   
+
+> Log into UCSC account and upload files as “Custom Tracks”
+> Choose appropriate genome assembly: Human (hg38) → “Add Custom Track”
+> Add and submit URLs to files individually (My Data → Custom Tracks). Below are some examples:
+> ```
+> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_all.dREG.peak.score.bed
+> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_plus_normalized_100Msignal.bw 
+> ftp://cbsuftp.biohpc.cornell.edu/pr46ftp/[YOUR_CORNELL_ID]/[PROJECT_NAME]_combined_stageA_minus_normalized_100Msignal.bw
+> ```
+> View in genome browser → “Go” 
+> Check some genes of interest to make sure files are correct  
+> Save Settings to allow session to be loaded and shared with others. “My Session” → “Save Settings” 
+> Can configure settings to edit layout – any updates need to be saved
+> Can share URL to collaborators!  
+
+I like to add the following line at the very beginning of bed files of TRE coordinates before uploaded onto UCSC Genome Browser. Change track name and description if you like. 
+```
+track name=dREG_peak_score_ALL_TREs description="dREG peak score (ALL TREs)" itemRgb=On
+```
 
 ### Other visuzalization tools 
-You can consider using tools such as `DeepTool` to visualize signal distribution. See an example from [here]() - Supplementary figure 1. 
+You can consider using tools such as [DeepTool](https://deeptools.readthedocs.io/en/develop/) to visualize signal distribution. See an example from [here](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full) - Supplementary figure 1. 
 
 
 ## 4. TRE type classification
