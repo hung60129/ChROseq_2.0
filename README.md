@@ -399,11 +399,16 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 
 ## 10. Define differentially transcribed (DT) genes between cell types/conditions
 >**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/gtf2bed_v2.3.py` <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 ### 10-1: Re-define gene body coordinates
-RNA polymerase pausing around promoter regions has been observed (see ). 
+RNA polymerase pausing around promoter regions has been observed (see [Core at al., Science, 2008](https://www.science.org/doi/10.1126/science.1150843)). To eliminate the bias generated from this RNA pol pausing event, we exclude ChRO-seq signal at the promoter regions when extracting counts from gene bodies. Using a python script, we re-define gene bodies coordinates by removing the first 500 bp (or custom distance) downstream of all TSSs in gtf annotations. An example command will be: <br>
+```
+python3 gtf2bed_v2.3.py -s 500 /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf > [PROJECT_NAME]_gencode_annotation_start500.bed
+```
+You can also flag the python script to remove ChRO-seq signal around the transcription terminal sties (TTSs). However, based on my ChRO-seq datasets, I find the RNA pol pausing at TTSs is not profound. The output bed file is required for the R script described in the next session. <br>
 
 ### 10-2: Define DT genes between cell types/conditions
 The R script template of this job can be found at: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R`. <br>
@@ -419,7 +424,11 @@ You can modify the R template for your project needs. The R script include the 3
 3. Input count matrix for differential expression analysis using package `DESeq2` <br>
 
 ### 10-3: Additional comments
+In addition to RNA pol pausing at TSS/TTS regions, the active TREs present in gene bodies may create biases when extracting counts from gene bodies. One way to eliminate the bias from the activity of intragenic TREs is to exclude counts from these regions. I have done this for [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). Below are the specific steps for 
 
+1. use gtf2bed.py to re-define the gene coordinates (ex: set gene start position as 500 bp downstream of TSS)
+2. get the output from (1) and remove new gene coordinates with negative length (command: awk '$5 > 0 {print $0}' genecoordinates.bed > genecoordinates_start500.new.bed)
+3. use bedtool subtract function to subtract TRE coordinates from gene coordinates (command: bedtools subtract -a genes.bed -b TREs.bed > TRE_for_two_factor_analysis.bed)
 
 
 ## 11. Other ChRO-seq related tools
