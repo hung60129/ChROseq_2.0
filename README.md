@@ -306,8 +306,8 @@ This HOMER command generates a really detailed output file. We can use the pytho
 python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/extract_motif_coordinates_HOMER.py HOMER_stageA_CDX2_enhancer.txt > stageA_enhancer_containing_CDX2_motif.bed
 ```
 
-### 6-4: dditional comments
-In some cases were you have a specific hypothesis for a given TRE region (e.g. are there any motif sequences of transscript factor X present in a given TRE?), you can consider using function `FIMO` (Find Individual Motif Occurences) from [meme suite](https://meme-suite.org/meme/index.html). While `meme suite` has not been implemented in our lab's linex environment, you can easily carry out job using their website portal. <br>
+### 6-4: Additional comments
+In some cases were you have a specific hypothesis for a given TRE region (e.g. are there any motif sequences of transscript factor X present in a given TRE?), you can consider using function `FIMO` (Find Individual Motif Occurences) from [meme suite](https://meme-suite.org/meme/index.html). While `meme suite` has not been implemented in our lab's linux environment, you can easily carry out job using their website portal. <br>
 
 You may need to do the following before execute FIMO job: <br>
 - get DNA sequence of region of interest using this [tool](https://www.genome.ucsc.edu/cgi-bin/hgc?hgsid=1377211335_1JSdKvOBhA7HkslWuQydSAUvcXEN&g=getDna&i=NM_001328514.1&c=chr13&l=63278695&r=63795367&o=ncbiRefSeqCurated&table=ncbiRefSeqCurated) from UCSC Genome Browser. <br>
