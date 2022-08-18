@@ -15,6 +15,7 @@ Prepare mapping files (below are the path of genomes in the Sethupathy lab): <br
    - mouse (mm9): `/home/pr46_0001/projects/genome/mm9_rRNA` <br>
    - human (hg38): `/home/pr46_0001/projects/genome/GRCh38.p7_rRNA` <br>
    - rat (rn6): `/home/pr46_0001/projects/genome/rn6_rRNA` <br>
+
 If working with other species, use [bwa command](http://bio-bwa.sourceforge.net/bwa.shtml) to generate mapping files, add rRNA sequence to `.fa` file, and modify chromosom size file accordingly. Also, currently we only has mm9 genome build for mouse samples. You can consider use `liftOver` to convert mm9 output to mm10 if nedded. <br>
 
 Once on a compute node, source the environment to run ChRO-seq mapping: <br>
