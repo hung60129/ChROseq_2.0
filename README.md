@@ -371,7 +371,7 @@ The completion of the job will generate `[PROJECT-NAME-SE-stageA-prefix]_rankedP
 
 
 ## 9. Assign genes to TREs/SEs
-Assigning genes to TREs/SEs can be distance-based ([Method1](#method-1)) or correlation-based ([Method2](#method-2)). 
+Assigning genes to TREs/SEs can be distance-based ([Method1](#9-2:-Method-1)) or correlation-based ([Method2](#9-3:-Method-2)). 
 
 ### 9-1: prepare bed files
 Coordinates of TRE/SE/enhancer of interest in bed format: see instructions in [HOMER section](#prepare-bed-files).
@@ -424,11 +424,18 @@ You can modify the R template for your project needs. The R script include the 3
 3. Input count matrix for differential expression analysis using package `DESeq2` <br>
 
 ### 10-3: Additional comments
-In addition to RNA pol pausing at TSS/TTS regions, the active TREs present in gene bodies may create biases when extracting counts from gene bodies. One way to eliminate the bias from the activity of intragenic TREs is to exclude counts from these regions. I have done this for [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). Below are the specific steps for 
+In addition to RNA pol pausing at TSS/TTS regions, the active TREs present in gene bodies may create biases when extracting counts from gene bodies. One way to eliminate the bias from the activity of intragenic TREs is to exclude counts from these regions. I have done this for [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). Below are some technical details about how to acheive it: <br>
 
-1. use gtf2bed.py to re-define the gene coordinates (ex: set gene start position as 500 bp downstream of TSS)
-2. get the output from (1) and remove new gene coordinates with negative length (command: awk '$5 > 0 {print $0}' genecoordinates.bed > genecoordinates_start500.new.bed)
-3. use bedtool subtract function to subtract TRE coordinates from gene coordinates (command: bedtools subtract -a genes.bed -b TREs.bed > TRE_for_two_factor_analysis.bed)
+1. Use `gtf2bed.py` to re-define the gene coordinates (ex: set gene start position as 500 bp downstream of TSS) <br>
+2. Remove new gene coordinates with negative length. A simple `awk` function can tackle this: <br>
+```
+awk '$5 > 0 {print $0}' genecoordinates_start500.bed > genecoordinates_start500_positive.bed
+```
+3. Subtract TRE regions from gene bodies. A simple `bedtool` function can tackle this: <br>
+```
+bedtools subtract -a genecoordinates_start500.positive.bed -b TREs_coordinates.bed > genecoordinates_start500_positive_noTRE.bed
+```
+Say if you want to compare stage A relevant to stage B, you would revmoe TERs that are present in one or both stages. 
 
 
 ## 11. Other ChRO-seq related tools
