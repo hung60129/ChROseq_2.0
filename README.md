@@ -441,6 +441,8 @@ Say if you want to compare stage A relevant to stage B, you would revmoe TERs th
 
 ## 11. Other ChRO-seq related tools
 
+The [Danko lab](https://www.dankolab.org/Software.html) is very active in expanding and maintaining analysis tools for ChRO-seq downstream analysis, so you can check it out if you like! The one that 
+
 ### Tunits
 
 Classify predicted transcription units: Haven't polished python script for publication purpose or 
