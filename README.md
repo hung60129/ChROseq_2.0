@@ -427,11 +427,11 @@ You can modify the R template for your project needs. The R script include the 3
 In addition to RNA pol pausing at TSS/TTS regions, the active TREs present in gene bodies may create biases when extracting counts from gene bodies. One way to eliminate the bias from the activity of intragenic TREs is to exclude counts from these regions. I have done this for [Hung et al., bioRxiv (multi-omics project)](https://www.biorxiv.org/content/10.1101/2022.07.12.499825v1.full). Below are some technical details about how to acheive it: <br>
 
 1. Use `gtf2bed.py` to re-define the gene coordinates (ex: set gene start position as 500 bp downstream of TSS) <br>
-2. Remove new gene coordinates with negative length. A simple `awk` function can tackle this: <br>
+2. Remove new gene coordinates with negative length. A simple `awk` command can tackle this: <br>
 ```
 awk '$5 > 0 {print $0}' genecoordinates_start500.bed > genecoordinates_start500_positive.bed
 ```
-3. Subtract TRE regions from gene bodies. A simple `bedtool` function can tackle this: <br>
+3. Subtract TRE regions from gene bodies. A simple `bedtool` command can tackle this: <br>
 ```
 bedtools subtract -a genecoordinates_start500.positive.bed -b TREs_coordinates.bed > genecoordinates_start500_positive_noTRE.bed
 ```
