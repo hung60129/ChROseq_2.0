@@ -400,14 +400,14 @@ python3 /home/pr46_0001/cornell_tutorials/ChROseq_tutorial/findClosestGene2TRE_v
 
 ## 10. Define differentially transcribed (DT) genes between cell types/conditions
 >**Goal**: Performs Pearson correlation between genes and TREs within 500 kb (or specified distance) in distance following log2+1 transformation <br>
->**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/gtf2bed_v2.3.py` <br>
+>**Tool path**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/tools/gtf2bed_v2.1.py` <br>
 >**R script template**: `/home/pr46_0001/cornell_tutorials/ChROseq_tutorial/ChROseq_R/DESeq2_ChROseq_Genes_tutorial.R` <br>
 >**Appropriate type of compute node**: 24-core node <br>
 
 ### 10-1: Re-define gene body coordinates
 RNA polymerase pausing around promoter regions has been observed (see [Core at al., Science, 2008](https://www.science.org/doi/10.1126/science.1150843)). To eliminate the bias generated from this RNA pol pausing event, we exclude ChRO-seq signal at the promoter regions when extracting counts from gene bodies. Using a python script, we re-define gene bodies coordinates by removing the first 500 bp (or custom distance) downstream of all TSSs in gtf annotations. An example command will be: <br>
 ```
-python3 gtf2bed_v2.3.py -d 500 /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf > [PROJECT_NAME]_gencode_annotation_start500.bed
+python3 gtf2bed_v2.1.py -d 500 /home/pr46_0001/projects/genome/GRCh38.p7/gencode.v25.annotation.gtf > [PROJECT_NAME]_gencode_annotation_start500.bed
 ```
 You can also flag the python script to remove ChRO-seq signal around the transcription terminal sties (TTSs). However, based on my ChRO-seq datasets, I find the RNA pol pausing at TTSs is not profound. The output bed file is required for the R script described in the next session. <br>
 
